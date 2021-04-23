@@ -44,12 +44,10 @@ class FunctionComponent(ResilientComponent):
             # Get and validate required function inputs:
             # If input is optional, remove it from list
             # Optional inputs will still be available in fn_inputs
+            # OpenC2 function can take a full command in one field or composed of many fields. This may be changed but for now lets just work with the full command if present 
+            # TODO: if full command not provided fallback to the piecemeal fields 
             fn_inputs = validate_fields(
-                ["openc2_action_name",
-                 "openc2_actuator",
-                 "openc2_extra_options",
-                 "openc2_full_command",
-                 "openc2_target"],
+                ["openc2_full_command"],
                 kwargs)
 
             LOG.info("'{0}' inputs: %s", fn_inputs)
@@ -75,6 +73,34 @@ class FunctionComponent(ResilientComponent):
             # results = rp.done(True, response.json())
 
             ##############################################
+            # First create an openc2 Command object from the field
+            from openc2 import parse, IPv4Address, Command, Response, Args
+            
+            # If we are not working with the full command and instead piecemeal options we can create an openc2 command object like so 
+            # cmd = Command(action=openc2_command_obj.get('action')
+            #             target=IPv4Address(ipv4_net = "1.2.3.4"))
+            # cmd = parse(cmd.serialize())
+
+            # Because we allow the user to provide a json schema we can try to streamline the code by just using that schema 
+            # .get is safer but we can do direct key access because of the validation above
+            openc2_command_obj = fn_inputs["openc2_full_command"]
+
+            
+            if openc2_command_obj['action'] == "deny" and openc2_command_obj['target']['type'] == "ipv4_net":
+                rule = iptc.Rule()
+                rule.create_match(openc2_command_obj['target']['ipv4_net'])
+                rule.create_target("DROP")
+
+                if openc2_command_obj['args']['response_requested'] == 'complete':
+                    resp = Response(status=200)
+                    msg = resp.serialize()
+
+            # Do you want to use your own custom actuators ? 
+            # Define a class in /lib/openc2/custom_actuators which can
+            # be imported and used here:
+            # Example: 
+            # from fn_openc2.lib.openc2.custom_actuators import acme_widget_actuator
+            # widget = AcmeWidgetActuator(name="foo", version=1.1)
 
             yield StatusMessage("Finished '{0}' that was running in workflow '{1}'".format(FN_NAME, wf_instance_id))
 
