@@ -32,7 +32,10 @@ setup(
     long_description="""IBM SOAR Orchestration Components for 'fn_openc2'""",
     install_requires=[
         "resilient-circuits>=30.0.0",
-        "resilient-lib>=39.0.0"
+        "resilient-lib>=39.0.0",
+        "openc2",
+        "stix2",
+        "python-iptables"
     ],
     packages=find_packages(),
     include_package_data=True,
