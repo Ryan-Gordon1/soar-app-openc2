@@ -22,14 +22,14 @@ def snake_to_camel(word):
 
 setup(
     name="fn_openc2",
-    display_name="<<display name of your app here>>",
+    display_name="SOAR Functions for the OpenC2 standard",
     version="1.0.0",
-    license="<<insert here>>",
+    license="MIT",
     author="Ryan Gordon",
     author_email="ryan.gordon1@ibm.com",
-    url="<<your company url>>",
-    description="Resilient Circuits Components for 'fn_openc2'",
-    long_description="""Resilient Circuits Components for 'fn_openc2'""",
+    url="ibm.biz/soarcommunity",
+    description="IBM SOAR Orchestration Components for 'fn_openc2'",
+    long_description="""IBM SOAR Orchestration Components for 'fn_openc2'""",
     install_requires=[
         "resilient-circuits>=30.0.0",
         "resilient-lib>=39.0.0"
